@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Twelve Realms Adventure</title>
+    <style>
+        /* Style for the container div */
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            background-color: #1d1d1d; /* Dark background color */
+            color: #fff; /* Bright white font color */
+            position: relative;
+        }
+
+        /* Style for the buttons container */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Style for the buttons */
+        .button {
+            font-size: 28px;
+            padding: 15px 30px;
+            border: 2px solid #fff; /* White outline */
+            border-radius: 10px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: transparent; /* Transparent background */
+            color: #fff; /* Bright white font color */
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+        }
+
+        /* Style for the result text (Comic Sans font and larger font size) */
+        .result {
+            font-size: 36px; /* Increased font size for all outcomes */
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Comic Sans font for all outcomes */
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        /* Style for player name input */
+        #playerNameInput {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        /* Style for player list */
+        #playerList {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 20px;
+            max-height: 300px;
+            border: none; /* Remove the border */
+        }
+
+        /* Style for green font color (good outcomes) */
+        .goodOutcome {
+            color: green !important;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Comic Sans font for good outcomes */
+            font-size: 36px; /* Increased font size for good outcomes */
+        }
+
+        /* Style for red font color (bad outcomes) */
+        .badOutcome {
+            color: red !important;
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Comic Sans font for bad outcomes */
+            font-size: 36px; /* Increased font size for bad outcomes */
+        }
+
+        /* Style for the dice roller */
+        .diceRoller {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        /* Style for the dice result */
+        #diceResult {
+            font-size: 48px; /* Increased font size for dice result */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Twelve Realms Adventure!</h1>
+        <!-- Dice roller -->
+        <div class="diceRoller" onclick="rollDice()">🎲 Roll Dice</div>
+        <!-- Dice result -->
+        <div id="diceResult"></div>
+        <!-- Player name input -->
+        <input type="text" id="playerNameInput" placeholder="Enter Player Name" onkeyup="addPlayerOnEnter(event)">
+        <button class="button" onclick="randomizeAllPlayers()">Randomize for All Players</button>
+        <div id="playerOutcomes">
+            <!-- Player outcomes will be displayed here -->
+        </div>
+        <div id="playerList">
+            <!-- Player list will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        // Define the twelve realms and characters (updated)
+        const realms = [
+            "Sea",
+            "Fire",
+            "Meadow",
+            "Glitch",
+            "Fantasy",
+            "Medieval",
+            "Cursed",
+            "Jungle",
+            "Desert",
+            "Cave",
+            "Frost", /* Frost realm added */
+            "Sky"
+        ];
+
+        const characters = [
+            "Parthenia",
+            "Ankou",
+            "Eskirpa",
+            "Subject-740",
+            "Kit",
+            "Valiant",
+            "Crazy Ann",
+            "Alia",
+            "Abdullah",
+            "Trog",
+            "Freja",
+            "Kidd"
+        ];
+
+        const playerOutcomes = {};
+        const playerList = [];
+
+        // Randomization and quitGame functions (updated JavaScript code)
+        function randomizeAllPlayers() {
+            if (playerList.length === 0) {
+                alert("Please add players before exploring realms.");
+                return;
+            }
+
+            // Clear old outcomes
+            clearPlayerOutcomes();
+
+            playerList.forEach(playerName => {
+                const realmIndex = Math.floor(Math.random() * realms.length);
+                const characterIndex = Math.floor(Math.random() * characters.length);
+                const realm = realms[realmIndex];
+                const character = characters[characterIndex];
+                let outcomeClass = "result"; // Default class
+
+                const resultText = `${playerName}: Your Match - ${character} and ${realm}`;
+                
+                // Add the outcome to the player outcomes list
+                if (!playerOutcomes[playerName]) {
+                    playerOutcomes[playerName] = [];
+                }
+
+                // Determine whether it's a good or bad outcome and apply the corresponding class
+                if (isGood(realm, character)) {
+                    outcomeClass = "goodOutcome";
+                } else if (isBad(realm, character)) {
+                    outcomeClass = "badOutcome";
+                }
+
+                playerOutcomes[playerName].push({ text: resultText, class: outcomeClass });
+            });
+
+            displayPlayerOutcomes();
+        }
+
+        // Function to check if it's a good outcome
+        function isGood(realm, character) {
+            const goodOutcomes = {
+                "Sea": "Kidd",
+                "Fire": "Ankou",
+                "Frost": "Eskirpa",
+                "Meadow": "Parthenia",
+                "Glitch": "Subject-740",
+                "Fantasy": "Kit",
+                "Medieval": "Valiant",
+                "Cursed": "Crazy Ann",
+                "Jungle": "Alia",
+                "Desert": "Abdullah",
+                "Cave": "Trog",
+                "Sky": "Freja"
+            };
+
+            return realm in goodOutcomes && goodOutcomes[realm] === character;
+        }
+
+        // Function to check if it's a bad outcome
+        function isBad(realm, character) {
+            const badOutcomes = {
+                "Sea": "Ankou",
+                "Fire": "Eskirpa",
+                "Frost": "Parthenia",
+                "Meadow": "Subject-740",
+                "Glitch": "Kit",
+                "Fantasy": "Valiant",
+                "Medieval": "Crazy Ann",
+                "Cursed": "Alia",
+                "Jungle": "Abdullah",
+                "Desert": "Trog",
+                "Cave": "Freja",
+                "Sky": "Kidd"
+            };
+
+            return realm in badOutcomes && badOutcomes[realm] === character;
+        }
+
+        // Function to add a player when Enter key is pressed
+        function addPlayerOnEnter(event) {
+            if (event.key === "Enter") {
+                addPlayer();
+            }
+        }
+
+        // Function to add a player
+        function addPlayer() {
+            if (playerList.length >= 8) {
+                alert("Maximum number of players reached (8 players).");
+                return;
+            }
+
+            const playerName = document.getElementById("playerNameInput").value.trim();
+            document.getElementById("playerNameInput").value = '';
+
+            // Add the player to the player list
+            if (playerName !== '') {
+                playerList.push(playerName);
+            }
+
+            displayPlayerList();
+        }
+
+        // Display player outcomes
+        function displayPlayerOutcomes() {
+            const playerOutcomesContainer = document.getElementById("playerOutcomes");
+            playerOutcomesContainer.innerHTML = '';
+            
+            for (const playerName in playerOutcomes) {
+                if (playerOutcomes.hasOwnProperty(playerName)) {
+                    const outcomes = playerOutcomes[playerName];
+                    outcomes.forEach(outcome => {
+                        const outcomeElement = document.createElement('div');
+                        outcomeElement.className = outcome.class;
+                        outcomeElement.textContent = outcome.text;
+                        playerOutcomesContainer.appendChild(outcomeElement);
+                    });
+                }
+            }
+        }
+
+        // Display player list
+        function displayPlayerList() {
+            const playerListContainer = document.getElementById("playerList");
+            playerListContainer.innerHTML = 'Players:<br>';
+            playerList.forEach(playerName => {
+                const playerElement = document.createElement('div');
+                playerElement.textContent = `- ${playerName}`;
+                playerListContainer.appendChild(playerElement);
+            });
+        }
+
+        // Clear player outcomes
+        function clearPlayerOutcomes() {
+            for (const playerName in playerOutcomes) {
+                if (playerOutcomes.hasOwnProperty(playerName)) {
+                    playerOutcomes[playerName] = [];
+                }
+            }
+        }
+
+        // Dice roller function
+        function rollDice() {
+            const min = 1;
+            const max = 6; // You can change this to your desired dice sides.
+            const result = Math.floor(Math.random() * (max - min + 1)) + min;
+            const diceResultElement = document.getElementById("diceResult");
+            diceResultElement.textContent = result;
+        }
+    </script>
+</body>
+</html>
